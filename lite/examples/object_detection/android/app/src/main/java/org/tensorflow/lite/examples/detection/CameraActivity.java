@@ -43,13 +43,22 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.tensorflow.lite.examples.detection.env.ImageUtils;
 import org.tensorflow.lite.examples.detection.env.Logger;
 
@@ -79,12 +88,20 @@ public abstract class CameraActivity extends AppCompatActivity
   private LinearLayout bottomSheetLayout;
   private LinearLayout gestureLayout;
   private BottomSheetBehavior<LinearLayout> sheetBehavior;
-
+  protected HashMap<String, Recyclable> recyclablesList;
   protected TextView frameValueTextView, cropValueTextView, inferenceTimeTextView;
   protected ImageView bottomSheetArrowImageView;
   private ImageView plusImageView, minusImageView;
   private SwitchCompat apiSwitchCompat;
   private TextView threadsTextView;
+  private Button button;
+
+  private View.OnClickListener buttonOnClickListener = new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      buttonClicked();
+    }
+  };
 
   @Override
   protected void onCreate(final Bundle savedInstanceState) {
@@ -111,6 +128,8 @@ public abstract class CameraActivity extends AppCompatActivity
     gestureLayout = findViewById(R.id.gesture_layout);
     sheetBehavior = BottomSheetBehavior.from(bottomSheetLayout);
     bottomSheetArrowImageView = findViewById(R.id.bottom_sheet_arrow);
+    button = findViewById(R.id.button2);
+
 
     ViewTreeObserver vto = gestureLayout.getViewTreeObserver();
     vto.addOnGlobalLayoutListener(
@@ -167,6 +186,30 @@ public abstract class CameraActivity extends AppCompatActivity
 
     plusImageView.setOnClickListener(this);
     minusImageView.setOnClickListener(this);
+    recyclablesList = new HashMap<>();
+    fillRecyclablesList();
+    button.setOnClickListener(buttonOnClickListener);
+
+
+  }
+
+ public void fillRecyclablesList(){
+   String[] content = null;
+   try {
+     InputStream inputStream = getAssets().open("recyclables.txt");
+     BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+     String line = "";
+     while((line = br.readLine()) != null){
+       content = line.split(",");
+       recyclablesList.put(content[0].toLowerCase(), new Recyclable(content[0], content[1], content[2], content[3], 0));
+     }
+     br.close();
+   } catch (IOException e) {
+     e.printStackTrace();
+   }
+ }
+  public void buttonClicked() {
+    button.setText("AWESOME!");
   }
 
   protected int[] getRgbBytes() {

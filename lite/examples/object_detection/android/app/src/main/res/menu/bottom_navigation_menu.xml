@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_cam"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="Profile" />
+
+    <item android:id="@+id/navigation_goal"
+        android:icon="@drawable/ic_playlist_add_check_black_24dp"
+        android:title="Goals" />
+
+    <item android:id="@+id/navigation_stats"
+        android:icon="@drawable/ic_insert_chart_black_24dp"
+        android:title="Stats" />
+
+    <item
+        android:id="@+id/navigation_history"
+        android:icon="@drawable/ic_history_black_24dp"
+        android:title="History"
+        />
+
+    <item
+        android:id="@+id/navigation_requests"
+        android:icon="@drawable/ic_announcement_black_24dp"
+        android:title="Notice"
+         />
+</menu>

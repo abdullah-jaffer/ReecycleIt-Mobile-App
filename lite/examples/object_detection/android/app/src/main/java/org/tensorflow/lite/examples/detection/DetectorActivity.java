@@ -16,6 +16,8 @@
 
 package org.tensorflow.lite.examples.detection;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
@@ -30,9 +32,16 @@ import android.os.SystemClock;
 import android.util.Size;
 import android.util.TypedValue;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import org.tensorflow.lite.examples.detection.customview.OverlayView;
 import org.tensorflow.lite.examples.detection.customview.OverlayView.DrawCallback;
 import org.tensorflow.lite.examples.detection.env.BorderedText;
@@ -51,12 +60,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
   // Configuration values for the prepackaged SSD model.
   private static final int TF_OD_API_INPUT_SIZE = 300;
-  private static final boolean TF_OD_API_IS_QUANTIZED = true;
+  private static final boolean TF_OD_API_IS_QUANTIZED = false;
   private static final String TF_OD_API_MODEL_FILE = "detect.tflite";
   private static final String TF_OD_API_LABELS_FILE = "file:///android_asset/labelmap.txt";
   private static final DetectorMode MODE = DetectorMode.TF_OD_API;
   // Minimum detection confidence to track a detection.
-  private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.5f;
+  private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.7f;
   private static final boolean MAINTAIN_ASPECT = false;
   private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
   private static final boolean SAVE_PREVIEW_BITMAP = false;
@@ -81,7 +90,64 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private MultiBoxTracker tracker;
 
   private BorderedText borderedText;
+  private List<Classifier.Recognition> results;
 
+
+  @Override
+  public void buttonClicked() {
+
+    float minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
+    switch (MODE) {
+      case TF_OD_API:
+        minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
+        break;
+    }
+    for (final Classifier.Recognition result : results) {
+      if (result.getConfidence() >= minimumConfidence) {
+        Recyclable recyclable = super.recyclablesList.get(result.getTitle());
+        recyclable.setCount(recyclable.getCount() + 1);
+        super.recyclablesList.put(result.getTitle(), recyclable);
+      }
+    }
+
+    ArrayList<Recyclable> detectedRecyclables = new ArrayList<>();
+
+    Iterator<Map.Entry<String, Recyclable>> iterator = super.recyclablesList.entrySet().iterator();
+
+    while (iterator.hasNext()) {
+      Map.Entry<String, Recyclable> entry = iterator.next();
+      System.out.println(entry.getKey() + ":" + entry.getValue());
+      Recyclable recyclable = (Recyclable) entry.getValue();
+      if(recyclable.getCount() > 0){
+        detectedRecyclables.add(recyclable);
+      }
+    }
+
+
+    Intent disposalScreen = new Intent(getApplicationContext(), DisposalList.class);
+    disposalScreen.putExtra("recyclables", detectedRecyclables);
+
+    try {
+      //Write file
+      String filename = "bitmap.png";
+      FileOutputStream stream = this.openFileOutput(filename, Context.MODE_PRIVATE);
+      cropCopyBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+      //Cleanup
+      stream.close();
+      cropCopyBitmap.recycle();
+
+      //Pop intent
+      disposalScreen.putExtra("image", filename);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+
+
+    startActivity(disposalScreen);
+
+
+  }
   @Override
   public void onPreviewSizeChosen(final Size size, final int rotation) {
     final float textSizePx =
@@ -178,7 +244,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
           public void run() {
             LOGGER.i("Running detection on image " + currTimestamp);
             final long startTime = SystemClock.uptimeMillis();
-            final List<Classifier.Recognition> results = detector.recognizeImage(croppedBitmap);
+            results = detector.recognizeImage(croppedBitmap);
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
             cropCopyBitmap = Bitmap.createBitmap(croppedBitmap);
