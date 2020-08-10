@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    >
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/tfe_color_primary"
+        android:foregroundTint="@color/tfe_color_primary" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:text="Contact Information"
+        android:textColor="@color/tfe_color_accent"
+        android:textSize="24sp" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="match_parent"
+        android:layout_height="114dp"
+        android:layout_marginTop="100dp"
+        android:background="@drawable/ic_wave" />
+
+
+    <Button
+        android:id="@+id/next2"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="500dp"
+        android:layout_marginBottom="25dp"
+        android:backgroundTint="@color/tfe_color_primary"
+        android:drawableRight="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:text="Next"
+        android:textColor="@color/tfe_color_accent" />
+
+
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentRight="true"
+        android:tint="@color/tfe_color_accent"
+        app:srcCompat="@drawable/ic_person_black_24dp" />
+
+    <EditText
+        android:id="@+id/editText6"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="300dp"
+        android:drawableStart="@drawable/ic_email_black_24dp"
+        android:drawablePadding="16dp"
+        android:ems="10"
+        android:hint="email "
+        android:includeFontPadding="false"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/editText7"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="400dp"
+        android:drawableStart="@drawable/ic_local_phone_black_24dp"
+        android:drawablePadding="16dp"
+        android:ems="10"
+        android:hint="number"
+        />
+
+
+</RelativeLayout>
